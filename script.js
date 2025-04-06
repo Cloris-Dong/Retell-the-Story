@@ -37,21 +37,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Handle video loading
-    function handleVideoLoad(video, loadingElement) {
-        console.log('Video loaded:', video.src);
-        if (loadingElement) {
-            loadingElement.style.display = 'none';
-        }
+    function handleVideoLoad(video) {
+        const loadingElement = video.querySelector('.loading');
+        const errorElement = video.querySelector('.error');
+
+        if (loadingElement) loadingElement.style.display = 'none';
+        if (errorElement) errorElement.style.display = 'none';
         video.style.opacity = '1';
 
         // Force autoplay
-        video.play().catch(error => {
-            console.error('Error playing video:', error);
-            // If autoplay fails, try to play on user interaction
-            document.addEventListener('click', () => {
-                video.play().catch(e => console.error('Still cannot play video:', e));
-            }, { once: true });
-        });
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log("Autoplay failed:", error);
+                // If autoplay fails, try to play on user interaction
+                document.addEventListener('click', function playOnClick() {
+                    video.play();
+                    document.removeEventListener('click', playOnClick);
+                }, { once: true });
+            });
+        }
     }
 
     // Hide the story text initially
@@ -91,63 +96,55 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', adjustFontSize);
 
     function showVideos() {
-        // Reset all items to initial state
-        gridItems.forEach(item => {
-            item.classList.remove('visible');
+        const gridItems = document.querySelectorAll('.grid-item');
+        const totalDuration = 4000; // 4 seconds total
+        const delayPerItem = totalDuration / gridItems.length;
+
+        gridItems.forEach((item, index) => {
             const video = item.querySelector('video');
-            const loadingElement = item.querySelector('.loading');
-            if (video) {
-                video.currentTime = 0;
-                video.style.opacity = '0';
-                if (loadingElement) {
-                    loadingElement.style.display = 'block';
-                }
+            if (!video) return;
+
+            // Reset video state
+            video.currentTime = 0;
+            video.style.opacity = '0';
+
+            const loadingElement = video.querySelector('.loading');
+            const errorElement = video.querySelector('.error');
+            if (loadingElement) loadingElement.style.display = 'block';
+            if (errorElement) errorElement.style.display = 'none';
+
+            setTimeout(() => {
+                item.style.opacity = '1';
 
                 // Try to play the video
-                video.play().catch(error => {
-                    console.error('Error playing video:', error);
-                    if (loadingElement) {
-                        loadingElement.textContent = 'Error playing video';
-                    }
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.error("Error playing video:", error);
+                        if (errorElement) errorElement.style.display = 'block';
 
-                    // If video fails, try to load the GIF as fallback
-                    const sources = video.querySelectorAll('source');
-                    if (sources.length > 1) {
-                        console.log('Trying fallback GIF source');
-                        // Remove the first source (MP4) and try the second one (GIF)
-                        sources[0].remove();
-                    }
-                });
+                        // If video fails, try to load GIF
+                        const gifSource = video.querySelector('source[type="image/gif"]');
+                        if (gifSource) {
+                            const img = document.createElement('img');
+                            img.src = gifSource.src;
+                            img.style.width = '100%';
+                            img.style.height = '100%';
+                            img.style.objectFit = 'cover';
+                            video.parentNode.replaceChild(img, video);
+                        }
+                    });
+                }
+            }, index * delayPerItem);
+        });
+
+        // Show story text after all videos
+        setTimeout(() => {
+            const storyText = document.querySelector('.story-text');
+            if (storyText) {
+                storyText.style.opacity = '1';
             }
-        });
-        storyText.classList.remove('visible');
-
-        // Get the current order of items in the grid
-        const grid = document.querySelector('.grid');
-        const currentOrder = Array.from(grid.children);
-
-        // Show each video after its calculated delay
-        currentOrder.forEach((item, index) => {
-            // Calculate delay based on position (2.8 seconds between each)
-            const itemDelay = index * delay;
-
-            // Show each video after its calculated delay
-            setTimeout(() => {
-                item.classList.add('visible');
-                const video = item.querySelector('video');
-                if (video) {
-                    video.style.opacity = '1';
-                }
-
-                // If this is the last video (bottom-right), show the text after 5 seconds
-                if (index === currentOrder.length - 1) {
-                    // Show the text 5 seconds after the last video appears
-                    setTimeout(() => {
-                        storyText.classList.add('visible');
-                    }, 5000);
-                }
-            }, itemDelay);
-        });
+        }, totalDuration);
     }
 
     // Add click event listener to the text
@@ -163,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add video event listeners
     document.querySelectorAll('.grid-item video').forEach(video => {
         const loadingElement = video.parentElement.querySelector('.loading');
-        video.addEventListener('loadeddata', () => handleVideoLoad(video, loadingElement));
+        video.addEventListener('loadeddata', () => handleVideoLoad(video));
         video.addEventListener('error', () => {
             console.error('Error loading video:', video.src);
             if (loadingElement) {
