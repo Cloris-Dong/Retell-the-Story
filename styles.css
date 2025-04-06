@@ -134,6 +134,7 @@ video::-webkit-media-controls-toggle-closed-captions-button {
     width: 50%;
     white-space: nowrap;
     font-size: clamp(16px, calc(2vw + 10px), 32px);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 @keyframes pulse {
@@ -155,6 +156,7 @@ video::-webkit-media-controls-toggle-closed-captions-button {
     opacity: 1;
     transform: translate(-50%, -50%) scale(1.1);
     transition: all 0.3s ease;
+    text-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
 }
 
 /* Media query for mobile devices */
