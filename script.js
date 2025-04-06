@@ -192,13 +192,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show videos sequentially with consistent delays
         for (let i = 0; i < gridItems.length; i++) {
             const delay = i * videoStartDelay;
-            logDebugInfo(`设置视频 ${i + 1} 的延迟为 ${delay}ms`);
             await showSingleVideo(gridItems[i], i, delay);
         }
 
         // Show story text after all videos with 3s delay
         const totalDelay = (gridItems.length - 1) * videoStartDelay + storyTextDelay;
-        logDebugInfo(`将在 ${totalDelay}ms 后显示故事文本`);
         setTimeout(() => {
             logDebugInfo('显示故事文本');
             const storyText = document.querySelector('.story-text');
