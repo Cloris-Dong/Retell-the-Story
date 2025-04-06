@@ -168,8 +168,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Modified showVideos function
     async function showVideos() {
         const gridItems = document.querySelectorAll('.grid-item');
+        const initialDelay = 300; // 0.3 seconds initial delay
         const videoStartDelay = 2500; // 2.5 seconds after previous video starts
-        const storyTextDelay = 3000; // 3 seconds delay after last video
+        const storyTextDelay = 2000; // 2 seconds after last video starts
 
         // Reset all items first
         gridItems.forEach(item => {
@@ -181,20 +182,24 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Add initial delay before starting the first video
+        await new Promise(resolve => setTimeout(resolve, initialDelay));
+
         // Show videos sequentially with consistent delays
         for (let i = 0; i < gridItems.length; i++) {
             const delay = i * videoStartDelay;
             await showSingleVideo(gridItems[i], i, delay);
-        }
 
-        // Show story text after all videos with 3s delay
-        const totalDelay = (gridItems.length - 1) * videoStartDelay + storyTextDelay;
-        setTimeout(() => {
-            const storyText = document.querySelector('.story-text');
-            if (storyText) {
-                storyText.style.opacity = '1';
+            // If this is the last video, show story text after 2 seconds
+            if (i === gridItems.length - 1) {
+                setTimeout(() => {
+                    const storyText = document.querySelector('.story-text');
+                    if (storyText) {
+                        storyText.style.opacity = '1';
+                    }
+                }, storyTextDelay);
             }
-        }, totalDelay);
+        }
     }
 
     // Add click handler for the story text
