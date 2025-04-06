@@ -48,6 +48,7 @@ body {
     overflow: hidden;
     opacity: 0;
     transition: opacity 0.5s ease;
+    border-radius: 0;
 }
 
 .grid-item video,
@@ -56,6 +57,8 @@ body {
     height: 100%;
     object-fit: cover;
     border-radius: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
 }
 
 .grid-item img.loaded {
