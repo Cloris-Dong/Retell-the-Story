@@ -13,6 +13,10 @@ An interactive web page that displays a sequence of GIFs with sound effects. The
 - Copyright notice display after GIF sequence
 - Lazy loading for better performance
 
+## Live Demo
+
+Visit the live demo at: [https://cloris-dong.github.io/Retell-the-Story/](https://cloris-dong.github.io/Retell-the-Story/)
+
 ## Technologies Used
 
 - HTML5
@@ -29,12 +33,7 @@ git clone https://github.com/Cloris-Dong/Retell-the-Story.git
 cd Retell-the-Story
 ```
 
-2. Download required media files:
-   - Create a `gifs` directory in the project root
-   - Download the GIF files from [Google Drive](https://drive.google.com/drive/folders/1mcpuWudznWGXsA0PgjD001qdJKnZha2n?usp=sharing)
-   - Place the GIF files in the `gifs` directory
-
-3. Open `index.html` in your web browser.
+2. Open `index.html` in your web browser.
 
 ## Usage
 
@@ -55,15 +54,6 @@ The project uses several techniques to optimize performance:
    - GIFs appear one by one with smooth transitions
    - Users can start viewing content before all files are loaded
    - Better user experience on slower connections
-
-## Media Files
-
-The following media files are required but not included in the Git repository:
-- GIF files in the `gifs` directory
-- Sound effects in the `sounds` directory
-
-You can download these files from:
-- Media files: [Google Drive](https://drive.google.com/drive/folders/1mcpuWudznWGXsA0PgjD001qdJKnZha2n?usp=sharing)
 
 ## Converting MP4 to GIF
 
