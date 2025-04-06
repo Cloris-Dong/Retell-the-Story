@@ -120,4 +120,143 @@ document.addEventListener('DOMContentLoaded', () => {
             showGifs();
         }
     });
+
+    // 获取所有GIF元素
+    const gifs = document.querySelectorAll('.gif-container img');
+    const retellButton = document.getElementById('retell-button');
+    const copyright = document.getElementById('copyright');
+    let currentIndex = 0;
+    let isPlaying = false;
+    let audioContext;
+    let clickSound;
+    let gainNode;
+
+    // 初始化点击音效
+    function initClickSound() {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        clickSound = audioContext.createOscillator();
+        gainNode = audioContext.createGain();
+
+        clickSound.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        clickSound.type = 'sine';
+        clickSound.frequency.setValueAtTime(1000, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    }
+
+    // 播放点击音效
+    function playClickSound() {
+        if (!clickSound) {
+            initClickSound();
+        }
+
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+
+        clickSound.start();
+        clickSound.stop(audioContext.currentTime + 0.1);
+    }
+
+    // 创建 Intersection Observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // 当 GIF 进入视口时加载它
+                const img = entry.target;
+                if (img.dataset.src) {
+                    img.src = img.dataset.src;
+                    img.removeAttribute('data-src');
+                    observer.unobserve(img);
+                }
+            }
+        });
+    }, {
+        root: null,
+        rootMargin: '50px',
+        threshold: 0.1
+    });
+
+    // 初始化懒加载
+    function initLazyLoading() {
+        gifs.forEach(img => {
+            // 保存原始 src 到 data-src
+            img.dataset.src = img.src;
+            // 设置占位图或空白
+            img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+            // 开始观察
+            observer.observe(img);
+        });
+    }
+
+    // 随机打乱数组
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // 显示GIF序列
+    async function showGifSequence() {
+        if (isPlaying) return;
+        isPlaying = true;
+
+        // 隐藏重播按钮和版权信息
+        retellButton.style.opacity = '0';
+        copyright.style.opacity = '0';
+
+        // 重置所有GIF的显示状态
+        gifs.forEach(gif => {
+            gif.style.opacity = '0';
+            gif.style.display = 'none';
+        });
+
+        // 随机打乱GIF顺序
+        const shuffledGifs = shuffleArray([...gifs]);
+
+        // 依次显示GIF
+        for (let i = 0; i < shuffledGifs.length; i++) {
+            const gif = shuffledGifs[i];
+            gif.style.display = 'block';
+
+            // 确保 GIF 已加载
+            if (gif.dataset.src) {
+                gif.src = gif.dataset.src;
+                gif.removeAttribute('data-src');
+            }
+
+            // 淡入效果
+            await new Promise(resolve => {
+                gif.style.opacity = '1';
+                setTimeout(resolve, 2800);
+            });
+        }
+
+        // 显示重播按钮和版权信息
+        setTimeout(() => {
+            retellButton.style.opacity = '1';
+            copyright.style.opacity = '1';
+        }, 5000);
+
+        isPlaying = false;
+    }
+
+    // 页面加载完成后初始化
+    initLazyLoading();
+    showGifSequence();
+
+    // 点击重播按钮时重新播放序列
+    retellButton.addEventListener('click', () => {
+        playClickSound();
+        showGifSequence();
+    });
+
+    // 当页面重新获得焦点时重新播放序列
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            showGifSequence();
+        }
+    });
 });

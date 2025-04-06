@@ -11,6 +11,7 @@ An interactive web page that displays a sequence of GIFs with sound effects. The
 - Smooth fade-in animations
 - Automatic font size adjustment based on viewport
 - Copyright notice display after GIF sequence
+- Lazy loading for better performance
 
 ## Technologies Used
 
@@ -18,6 +19,7 @@ An interactive web page that displays a sequence of GIFs with sound effects. The
 - CSS3 (Grid, Flexbox, Animations)
 - JavaScript (ES6+)
 - Web Audio API
+- Intersection Observer API for lazy loading
 
 ## Setup
 
@@ -39,6 +41,20 @@ cd Retell-the-Story
 - The GIF sequence will start playing automatically when the page loads
 - Click the "Retell the Story" text to restart the sequence with a new random order
 - The sequence will also restart when returning to the page after it was hidden
+
+## Performance Optimization
+
+The project uses several techniques to optimize performance:
+
+1. Lazy Loading:
+   - GIFs are loaded only when they are about to be displayed
+   - Reduces initial page load time
+   - Saves bandwidth by loading content on demand
+
+2. Progressive Loading:
+   - GIFs appear one by one with smooth transitions
+   - Users can start viewing content before all files are loaded
+   - Better user experience on slower connections
 
 ## Media Files
 
