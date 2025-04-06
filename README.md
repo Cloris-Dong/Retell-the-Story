@@ -23,17 +23,30 @@ An interactive web page that displays a sequence of GIFs with sound effects. The
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/YOUR_USERNAME/REPOSITORY_NAME.git
-cd REPOSITORY_NAME
+git clone https://github.com/Cloris-Dong/Retell-the-Story.git
+cd Retell-the-Story
 ```
 
-2. Open `index.html` in your web browser.
+2. Download required media files:
+   - Create a `gifs` directory in the project root
+   - Download the GIF files from [GitHub Releases](https://github.com/Cloris-Dong/Retell-the-Story/releases)
+   - Place the GIF files in the `gifs` directory
+
+3. Open `index.html` in your web browser.
 
 ## Usage
 
 - The GIF sequence will start playing automatically when the page loads
 - Click the "Retell the Story" text to restart the sequence with a new random order
 - The sequence will also restart when returning to the page after it was hidden
+
+## Media Files
+
+The following media files are required but not included in the Git repository:
+- GIF files in the `gifs` directory
+- Sound effects in the `sounds` directory
+
+You can download these files from the [GitHub Releases](https://github.com/Cloris-Dong/Retell-the-Story/releases) page.
 
 ## License
 
