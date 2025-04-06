@@ -100,27 +100,41 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalDuration = 4000; // 4 seconds total
         const delayPerItem = totalDuration / gridItems.length;
 
+        // Reset all items first
+        gridItems.forEach(item => {
+            item.style.opacity = '0';
+            const video = item.querySelector('video');
+            if (video) {
+                video.style.opacity = '0';
+                video.currentTime = 0;
+                const loadingElement = video.querySelector('.loading');
+                const errorElement = video.querySelector('.error');
+                if (loadingElement) loadingElement.style.display = 'block';
+                if (errorElement) errorElement.style.display = 'none';
+            }
+        });
+
+        // Hide story text
+        const storyText = document.querySelector('.story-text');
+        if (storyText) {
+            storyText.style.opacity = '0';
+        }
+
+        // Show videos one by one
         gridItems.forEach((item, index) => {
             const video = item.querySelector('video');
             if (!video) return;
 
-            // Reset video state
-            video.currentTime = 0;
-            video.style.opacity = '0';
-
-            const loadingElement = video.querySelector('.loading');
-            const errorElement = video.querySelector('.error');
-            if (loadingElement) loadingElement.style.display = 'block';
-            if (errorElement) errorElement.style.display = 'none';
-
             setTimeout(() => {
                 item.style.opacity = '1';
+                video.style.opacity = '1';
 
                 // Try to play the video
                 const playPromise = video.play();
                 if (playPromise !== undefined) {
                     playPromise.catch(error => {
                         console.error("Error playing video:", error);
+                        const errorElement = video.querySelector('.error');
                         if (errorElement) errorElement.style.display = 'block';
 
                         // If video fails, try to load GIF
@@ -140,7 +154,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Show story text after all videos
         setTimeout(() => {
-            const storyText = document.querySelector('.story-text');
             if (storyText) {
                 storyText.style.opacity = '1';
             }
