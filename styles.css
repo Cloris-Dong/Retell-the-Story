@@ -1,0 +1,128 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    font-family: Arial, sans-serif;
+    position: relative;
+}
+
+.container {
+    width: 100%;
+    max-width: min(800px, 90vw);
+    height: 66.67vh;
+    /* Exactly 2/3 of viewport height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    position: relative;
+}
+
+.grid-item {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.grid-item.visible {
+    opacity: 1;
+}
+
+.story-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ffffff;
+    font-weight: bold;
+    font-family: "PingFang SC", sans-serif;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    white-space: nowrap;
+    z-index: 10;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    width: 50%;
+    text-align: center;
+    font-size: clamp(16px, calc(2vw + 10px), 32px);
+}
+
+.story-text.visible {
+    opacity: 1;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.6;
+    }
+}
+
+/* Media query for mobile devices */
+@media screen and (max-width: 768px) {
+    .container {
+        width: 90%;
+        height: auto;
+        aspect-ratio: 1;
+    }
+
+    .grid {
+        width: 100%;
+        height: 100%;
+    }
+
+    .story-text {
+        width: 70%;
+        font-size: clamp(14px, calc(1.5vw + 8px), 24px);
+    }
+}
+
+.copyright {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    color: #000000;
+    font-size: 12px;
+    opacity: 0.7;
+    z-index: 5;
+}
