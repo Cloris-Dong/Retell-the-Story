@@ -11,10 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize click sound
     function initClickSound() {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        gainNode = audioContext.createGain();
-        gainNode.gain.value = 0.5; // Set volume to 50%
-        gainNode.connect(audioContext.destination);
+        // Create audio context only when needed
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            gainNode = audioContext.createGain();
+            gainNode.gain.value = 0.5; // Set volume to 50%
+            gainNode.connect(audioContext.destination);
+        }
 
         // Load click sound
         fetch('sounds/click.wav')
@@ -28,12 +31,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Play click sound
     function playClickSound() {
+        if (!audioContext) {
+            initClickSound();
+        }
+
         if (audioContext && clickSound) {
             const source = audioContext.createBufferSource();
             source.buffer = clickSound;
             source.connect(gainNode);
+
+            // Resume audio context if it's suspended (Safari requirement)
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+
             source.start(0);
+            return source; // Return the source for tracking
         }
+        return null;
     }
 
     // Handle video loading
@@ -50,11 +65,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (playPromise !== undefined) {
             playPromise.catch(error => {
                 console.log("Autoplay failed:", error);
-                // If autoplay fails, try to play on user interaction
-                document.addEventListener('click', function playOnClick() {
-                    video.play();
-                    document.removeEventListener('click', playOnClick);
-                }, { once: true });
+                // If autoplay fails, try to load GIF
+                const gifSource = video.querySelector('source[type="image/gif"]');
+                if (gifSource) {
+                    const img = document.createElement('img');
+                    img.src = gifSource.src;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    video.parentNode.replaceChild(img, video);
+                }
             });
         }
     }
@@ -160,14 +180,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }, totalDuration);
     }
 
-    // Add click event listener to the text
-    storyText.addEventListener('click', () => {
-        // Play click sound
-        playClickSound();
+    // Add click handler for the story text
+    document.querySelector('.story-text').addEventListener('click', () => {
+        // Initialize audio context on first click if needed
+        if (!audioContext) {
+            initClickSound();
+        }
 
-        // 执行刷新操作
-        shuffleAndReorderItems();
-        showVideos();
+        // Play click sound and wait for it to finish before reloading
+        const source = playClickSound();
+        if (source) {
+            // Wait for the sound to finish before reloading
+            source.onended = () => {
+                location.reload();
+            };
+        } else {
+            // If sound couldn't be played, reload after a short delay
+            setTimeout(() => {
+                location.reload();
+            }, 200);
+        }
     });
 
     // Add video event listeners
@@ -178,6 +210,16 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error loading video:', video.src);
             if (loadingElement) {
                 loadingElement.textContent = 'Error loading video';
+            }
+            // If video fails to load, try to load GIF
+            const gifSource = video.querySelector('source[type="image/gif"]');
+            if (gifSource) {
+                const img = document.createElement('img');
+                img.src = gifSource.src;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                video.parentNode.replaceChild(img, video);
             }
         });
     });
