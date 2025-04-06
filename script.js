@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const gridItems = document.querySelectorAll('.grid-item');
     const storyText = document.querySelector('.story-text');
     const delay = 2800; // 2.8 seconds delay between each animation
-    const gifDurations = [5000, 10000, 5000, 10000]; // Durations for each GIF in milliseconds
     const fadeInDuration = 300; // 0.3 seconds for fade-in effect
 
     // Initialize audio context and gain node
@@ -37,13 +36,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Handle image loading
-    function handleImageLoad(img) {
-        img.classList.add('loaded');
-        const loadingElement = img.parentElement.querySelector('.loading');
+    // Handle video loading
+    function handleVideoLoad(video, loadingElement) {
+        console.log('Video loaded:', video.src);
         if (loadingElement) {
             loadingElement.style.display = 'none';
         }
+        video.style.opacity = '1';
     }
 
     // Hide the story text initially
@@ -82,14 +81,30 @@ document.addEventListener('DOMContentLoaded', () => {
     adjustFontSize();
     window.addEventListener('resize', adjustFontSize);
 
-    function showGifs() {
+    function showVideos() {
         // Reset all items to initial state
         gridItems.forEach(item => {
             item.classList.remove('visible');
             const video = item.querySelector('video');
+            const loadingElement = item.querySelector('.loading');
             if (video) {
                 video.currentTime = 0;
-                video.play();
+                video.style.opacity = '0';
+                if (loadingElement) {
+                    loadingElement.style.display = 'block';
+                }
+                // Force video reload
+                const src = video.src;
+                video.src = '';
+                setTimeout(() => {
+                    video.src = src;
+                    video.play().catch(error => {
+                        console.error('Error playing video:', error);
+                        if (loadingElement) {
+                            loadingElement.textContent = 'Error playing video';
+                        }
+                    });
+                }, 50);
             }
         });
         storyText.classList.remove('visible');
@@ -106,6 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Show each video after its calculated delay
             setTimeout(() => {
                 item.classList.add('visible');
+                const video = item.querySelector('video');
+                if (video) {
+                    video.style.opacity = '1';
+                }
 
                 // If this is the last video (bottom-right), show the text after 5 seconds
                 if (index === currentOrder.length - 1) {
@@ -129,14 +148,26 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(() => {
                 // 音效播放完成后，再执行刷新操作
                 shuffleAndReorderItems();
-                showGifs();
+                showVideos();
             })
             .catch(error => {
                 console.log("Audio playback failed:", error);
                 // 如果音频播放失败，仍然执行刷新操作
                 shuffleAndReorderItems();
-                showGifs();
+                showVideos();
             });
+    });
+
+    // Add video event listeners
+    document.querySelectorAll('.grid-item video').forEach(video => {
+        const loadingElement = video.parentElement.querySelector('.loading');
+        video.addEventListener('loadeddata', () => handleVideoLoad(video, loadingElement));
+        video.addEventListener('error', () => {
+            console.error('Error loading video:', video.src);
+            if (loadingElement) {
+                loadingElement.textContent = 'Error loading video';
+            }
+        });
     });
 
     // Initial setup
@@ -144,26 +175,14 @@ document.addEventListener('DOMContentLoaded', () => {
     shuffleAndReorderItems();
 
     // Start the sequence
-    showGifs();
+    showVideos();
 
     // Add event listener for page visibility changes
     document.addEventListener('visibilitychange', function () {
         if (document.visibilityState === 'visible') {
             // Restart the sequence when the page becomes visible again
             shuffleAndReorderItems();
-            showGifs();
+            showVideos();
         }
-    });
-
-    // Add load event listeners to all images
-    document.querySelectorAll('.grid-item img').forEach(img => {
-        img.addEventListener('load', () => handleImageLoad(img));
-        img.addEventListener('error', () => {
-            console.error('Error loading image:', img.src);
-            const loadingElement = img.parentElement.querySelector('.loading');
-            if (loadingElement) {
-                loadingElement.textContent = 'Error loading image';
-            }
-        });
     });
 });

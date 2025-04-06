@@ -12,16 +12,28 @@
     <div class="container">
         <div class="grid">
             <div class="grid-item">
-                <video src="videos/video1.mp4" autoplay loop muted playsinline></video>
+                <div class="loading">Loading video 1...</div>
+                <video src="videos/video1.mp4" autoplay loop muted playsinline
+                    onerror="console.error('Error loading video 1')"
+                    onloadeddata="console.log('Video 1 loaded')"></video>
             </div>
             <div class="grid-item">
-                <video src="videos/video2.mp4" autoplay loop muted playsinline></video>
+                <div class="loading">Loading video 2...</div>
+                <video src="videos/video2.mp4" autoplay loop muted playsinline
+                    onerror="console.error('Error loading video 2')"
+                    onloadeddata="console.log('Video 2 loaded')"></video>
             </div>
             <div class="grid-item">
-                <video src="videos/video3.mp4" autoplay loop muted playsinline></video>
+                <div class="loading">Loading video 3...</div>
+                <video src="videos/video3.mp4" autoplay loop muted playsinline
+                    onerror="console.error('Error loading video 3')"
+                    onloadeddata="console.log('Video 3 loaded')"></video>
             </div>
             <div class="grid-item">
-                <video src="videos/video4.mp4" autoplay loop muted playsinline></video>
+                <div class="loading">Loading video 4...</div>
+                <video src="videos/video4.mp4" autoplay loop muted playsinline
+                    onerror="console.error('Error loading video 4')"
+                    onloadeddata="console.log('Video 4 loaded')"></video>
             </div>
         </div>
         <div class="story-text">Retell the Story</div>
