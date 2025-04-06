@@ -115,7 +115,54 @@ document.addEventListener('DOMContentLoaded', () => {
     adjustFontSize();
     window.addEventListener('resize', adjustFontSize);
 
-    function showVideos() {
+    // Function to show a single video
+    function showSingleVideo(item, index, delay) {
+        return new Promise((resolve) => {
+            setTimeout(async () => {
+                console.log(`Showing video ${index + 1}`);
+                const video = item.querySelector('video');
+                if (!video) {
+                    console.log(`No video found in grid item ${index + 1}`);
+                    resolve();
+                    return;
+                }
+
+                try {
+                    // Show the video first
+                    item.style.opacity = '1';
+                    video.style.opacity = '1';
+
+                    // Try to play the video
+                    const playPromise = video.play();
+                    if (playPromise !== undefined) {
+                        await playPromise;
+                        console.log(`Video ${index + 1} started playing successfully`);
+                    }
+                } catch (error) {
+                    console.error(`Error with video ${index + 1}:`, error);
+                    // If video fails, try to load GIF
+                    const gifSource = video.querySelector('source[type="image/gif"]');
+                    if (gifSource && video.parentNode) {
+                        console.log(`Loading GIF for video ${index + 1}`);
+                        const img = document.createElement('img');
+                        img.src = gifSource.src;
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.objectFit = 'cover';
+                        try {
+                            video.parentNode.replaceChild(img, video);
+                        } catch (e) {
+                            console.error(`Error replacing video with GIF for video ${index + 1}:`, e);
+                        }
+                    }
+                }
+                resolve();
+            }, delay);
+        });
+    }
+
+    // Modified showVideos function
+    async function showVideos() {
         console.log('Starting showVideos function');
         const gridItems = document.querySelectorAll('.grid-item');
         const totalDuration = 4000; // 4 seconds total
@@ -130,56 +177,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (video) {
                 video.style.opacity = '0';
                 video.currentTime = 0;
-                const loadingElement = video.querySelector('.loading');
-                const errorElement = video.querySelector('.error');
-                if (loadingElement) loadingElement.style.display = 'block';
-                if (errorElement) errorElement.style.display = 'none';
             }
         });
 
-        // Hide story text
-        const storyText = document.querySelector('.story-text');
-        if (storyText) {
-            storyText.style.opacity = '0';
+        // Show videos sequentially without additional delays
+        for (let i = 0; i < gridItems.length; i++) {
+            await showSingleVideo(gridItems[i], i, i * delayPerItem);
         }
-
-        // Show videos one by one
-        gridItems.forEach((item, index) => {
-            const video = item.querySelector('video');
-            if (!video) {
-                console.log(`No video found in grid item ${index + 1}`);
-                return;
-            }
-
-            console.log(`Setting up video ${index + 1} to show in ${index * delayPerItem}ms`);
-
-            setTimeout(() => {
-                console.log(`Showing video ${index + 1}`);
-                item.style.opacity = '1';
-                video.style.opacity = '1';
-
-                // Try to play the video
-                const playPromise = video.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        console.log(`Video ${index + 1} started playing successfully`);
-                    }).catch(error => {
-                        console.error(`Error playing video ${index + 1}:`, error);
-                        // If video fails, try to load GIF
-                        const gifSource = video.querySelector('source[type="image/gif"]');
-                        if (gifSource) {
-                            console.log(`Loading GIF for video ${index + 1}`);
-                            const img = document.createElement('img');
-                            img.src = gifSource.src;
-                            img.style.width = '100%';
-                            img.style.height = '100%';
-                            img.style.objectFit = 'cover';
-                            video.parentNode.replaceChild(img, video);
-                        }
-                    });
-                }
-            }, index * delayPerItem);
-        });
 
         // Show story text after all videos
         setTimeout(() => {
@@ -203,6 +207,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (source) {
             // Wait for the sound to finish before reloading
             source.onended = () => {
+                // Reset all videos before reloading
+                document.querySelectorAll('video').forEach(video => {
+                    video.currentTime = 0;
+                    video.load();
+                });
                 location.reload();
             };
         } else {
@@ -213,32 +222,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Add video event listeners
-    document.querySelectorAll('.grid-item video').forEach((video, index) => {
-        console.log(`Setting up video ${index + 1} event listeners`);
-        const loadingElement = video.parentElement.querySelector('.loading');
+    // Initialize videos
+    document.addEventListener('DOMContentLoaded', () => {
+        const videos = document.querySelectorAll('.grid-item video');
+        videos.forEach((video, index) => {
+            console.log(`Initializing video ${index + 1}`);
 
-        video.addEventListener('loadeddata', () => {
-            console.log(`Video ${index + 1} loaded data`);
-            handleVideoLoad(video);
-        });
+            // Set up event listeners
+            video.addEventListener('loadeddata', () => {
+                console.log(`Video ${index + 1} loaded data`);
+                handleVideoLoad(video);
+            });
 
-        video.addEventListener('error', (e) => {
-            console.error(`Error loading video ${index + 1}:`, e);
-            if (loadingElement) {
-                loadingElement.textContent = 'Error loading video';
-            }
-            // If video fails to load, try to load GIF
-            const gifSource = video.querySelector('source[type="image/gif"]');
-            if (gifSource) {
-                console.log(`Loading GIF for video ${index + 1}`);
-                const img = document.createElement('img');
-                img.src = gifSource.src;
-                img.style.width = '100%';
-                img.style.height = '100%';
-                img.style.objectFit = 'cover';
-                video.parentNode.replaceChild(img, video);
-            }
+            video.addEventListener('error', (e) => {
+                console.error(`Error loading video ${index + 1}:`, e);
+                const loadingElement = video.parentElement.querySelector('.loading');
+                if (loadingElement) {
+                    loadingElement.textContent = 'Error loading video';
+                }
+                // If video fails to load, try to load GIF
+                const gifSource = video.querySelector('source[type="image/gif"]');
+                if (gifSource && video.parentNode) {
+                    console.log(`Loading GIF for video ${index + 1}`);
+                    const img = document.createElement('img');
+                    img.src = gifSource.src;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'cover';
+                    try {
+                        video.parentNode.replaceChild(img, video);
+                    } catch (e) {
+                        console.error(`Error replacing video with GIF for video ${index + 1}:`, e);
+                    }
+                }
+            });
         });
     });
 
