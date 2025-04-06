@@ -182,6 +182,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Hide story text initially
+        const storyText = document.querySelector('.story-text');
+        if (storyText) {
+            storyText.style.opacity = '0';
+            storyText.style.animation = 'none';
+        }
+
         // Add initial delay before starting the first video
         await new Promise(resolve => setTimeout(resolve, initialDelay));
 
@@ -193,9 +200,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // If this is the last video, show story text after 2 seconds
             if (i === gridItems.length - 1) {
                 setTimeout(() => {
-                    const storyText = document.querySelector('.story-text');
                     if (storyText) {
-                        storyText.style.opacity = '1';
+                        storyText.style.opacity = '0.6'; // Start from 0.6 opacity
+                        storyText.style.animation = 'breathe 2s infinite ease-in-out';
                     }
                 }, storyTextDelay);
             }
@@ -277,11 +284,18 @@ document.addEventListener('DOMContentLoaded', () => {
     showVideos();
 
     // Add event listener for page visibility changes
+    let visibilityTimeout;
     document.addEventListener('visibilitychange', function () {
         if (document.visibilityState === 'visible') {
-            // Restart the sequence when the page becomes visible again
-            shuffleAndReorderItems();
-            showVideos();
+            // Clear any existing timeout
+            if (visibilityTimeout) {
+                clearTimeout(visibilityTimeout);
+            }
+
+            // Add a small delay before reload to ensure smooth transition
+            visibilityTimeout = setTimeout(() => {
+                window.location.reload();
+            }, 100);
         }
     });
 });
