@@ -29,7 +29,7 @@ cd Retell-the-Story
 
 2. Download required media files:
    - Create a `gifs` directory in the project root
-   - Download the GIF files from [GitHub Releases](https://github.com/Cloris-Dong/Retell-the-Story/releases)
+   - Download the GIF files from [Google Drive](https://drive.google.com/drive/folders/1mcpuWudznWGXsA0PgjD001qdJKnZha2n?usp=sharing)
    - Place the GIF files in the `gifs` directory
 
 3. Open `index.html` in your web browser.
@@ -46,7 +46,24 @@ The following media files are required but not included in the Git repository:
 - GIF files in the `gifs` directory
 - Sound effects in the `sounds` directory
 
-You can download these files from the [GitHub Releases](https://github.com/Cloris-Dong/Retell-the-Story/releases) page.
+You can download these files from:
+- Media files: [Google Drive](https://drive.google.com/drive/folders/1mcpuWudznWGXsA0PgjD001qdJKnZha2n?usp=sharing)
+
+## Converting MP4 to GIF
+
+If you have the original MP4 files, you can convert them to GIF using the provided script:
+
+1. Install required Python packages:
+```bash
+pip install moviepy
+```
+
+2. Run the conversion script:
+```bash
+python convert_videos.py
+```
+
+This will create GIF files in the `gifs` directory.
 
 ## License
 
