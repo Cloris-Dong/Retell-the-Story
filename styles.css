@@ -126,7 +126,6 @@ video::-webkit-media-controls-toggle-closed-captions-button {
     left: 50%;
     transform: translate(-50%, -50%);
     color: #ffffff;
-    font-family: "PingFang SC", sans-serif;
     text-align: center;
     opacity: 0;
     transition: opacity 0.5s ease-in-out;

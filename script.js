@@ -113,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
         span.style.visibility = 'hidden';
         span.style.position = 'absolute';
         span.style.whiteSpace = 'nowrap';
-        span.style.fontFamily = '"PingFang SC", sans-serif';
         document.body.appendChild(span);
 
         // Binary search for optimal font size
