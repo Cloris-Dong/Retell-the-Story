@@ -128,10 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function showSingleVideo(item, index, delay) {
         return new Promise((resolve) => {
             setTimeout(async () => {
-                logDebugInfo(`开始加载视频 ${index + 1}`);
                 const video = item.querySelector('video');
                 if (!video) {
-                    logDebugInfo(`未找到视频 ${index + 1}`);
                     resolve();
                     return;
                 }
@@ -145,14 +143,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     const playPromise = video.play();
                     if (playPromise !== undefined) {
                         await playPromise;
-                        logDebugInfo(`视频 ${index + 1} 开始播放`);
                     }
                 } catch (error) {
-                    logDebugInfo(`视频 ${index + 1} 播放失败: ${error.message}`);
                     // If video fails, try to load GIF
                     const gifSource = video.querySelector('source[type="image/gif"]');
                     if (gifSource && video.parentNode) {
-                        logDebugInfo(`正在加载视频 ${index + 1} 的 GIF 替代`);
                         const img = document.createElement('img');
                         img.src = gifSource.src;
                         img.style.width = '100%';
@@ -161,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         try {
                             video.parentNode.replaceChild(img, video);
                         } catch (e) {
-                            logDebugInfo(`替换视频 ${index + 1} 为 GIF 失败: ${e.message}`);
+                            // Ignore replacement error
                         }
                     }
                 }
@@ -172,12 +167,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Modified showVideos function
     async function showVideos() {
-        logDebugInfo('开始视频播放序列');
         const gridItems = document.querySelectorAll('.grid-item');
         const videoStartDelay = 2500; // 2.5 seconds after previous video starts
         const storyTextDelay = 3000; // 3 seconds delay after last video
-
-        logDebugInfo(`找到 ${gridItems.length} 个视频元素`);
 
         // Reset all items first
         gridItems.forEach(item => {
@@ -198,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show story text after all videos with 3s delay
         const totalDelay = (gridItems.length - 1) * videoStartDelay + storyTextDelay;
         setTimeout(() => {
-            logDebugInfo('显示故事文本');
             const storyText = document.querySelector('.story-text');
             if (storyText) {
                 storyText.style.opacity = '1';
