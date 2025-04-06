@@ -93,18 +93,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (loadingElement) {
                     loadingElement.style.display = 'block';
                 }
-                // Force video reload
-                const src = video.src;
-                video.src = '';
-                setTimeout(() => {
-                    video.src = src;
-                    video.play().catch(error => {
-                        console.error('Error playing video:', error);
-                        if (loadingElement) {
-                            loadingElement.textContent = 'Error playing video';
-                        }
-                    });
-                }, 50);
+
+                // Try to play the video
+                video.play().catch(error => {
+                    console.error('Error playing video:', error);
+                    if (loadingElement) {
+                        loadingElement.textContent = 'Error playing video';
+                    }
+
+                    // If video fails, try to load the GIF as fallback
+                    const sources = video.querySelectorAll('source');
+                    if (sources.length > 1) {
+                        console.log('Trying fallback GIF source');
+                        // Remove the first source (MP4) and try the second one (GIF)
+                        sources[0].remove();
+                    }
+                });
             }
         });
         storyText.classList.remove('visible');
@@ -141,21 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
     storyText.addEventListener('click', () => {
         // Play click sound
         playClickSound();
-        // 等待音效播放完成
-        return new Promise(resolve => {
-            clickSound.addEventListener('ended', resolve, { once: true });
-        })
-            .then(() => {
-                // 音效播放完成后，再执行刷新操作
-                shuffleAndReorderItems();
-                showVideos();
-            })
-            .catch(error => {
-                console.log("Audio playback failed:", error);
-                // 如果音频播放失败，仍然执行刷新操作
-                shuffleAndReorderItems();
-                showVideos();
-            });
+
+        // 执行刷新操作
+        shuffleAndReorderItems();
+        showVideos();
     });
 
     // Add video event listeners

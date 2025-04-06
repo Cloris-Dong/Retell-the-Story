@@ -29,5 +29,4 @@ build/
 .cache/
 
 # Large media files
-*.mp4
 sounds/
