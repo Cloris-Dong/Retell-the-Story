@@ -30,6 +30,4 @@ build/
 
 # Large media files
 *.mp4
-*.gif
-gifs/
 sounds/
