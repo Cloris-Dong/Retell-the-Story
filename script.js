@@ -116,9 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', adjustFontSize);
 
     function showVideos() {
+        console.log('Starting showVideos function');
         const gridItems = document.querySelectorAll('.grid-item');
         const totalDuration = 4000; // 4 seconds total
         const delayPerItem = totalDuration / gridItems.length;
+
+        console.log(`Found ${gridItems.length} grid items`);
 
         // Reset all items first
         gridItems.forEach(item => {
@@ -143,23 +146,29 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show videos one by one
         gridItems.forEach((item, index) => {
             const video = item.querySelector('video');
-            if (!video) return;
+            if (!video) {
+                console.log(`No video found in grid item ${index + 1}`);
+                return;
+            }
+
+            console.log(`Setting up video ${index + 1} to show in ${index * delayPerItem}ms`);
 
             setTimeout(() => {
+                console.log(`Showing video ${index + 1}`);
                 item.style.opacity = '1';
                 video.style.opacity = '1';
 
                 // Try to play the video
                 const playPromise = video.play();
                 if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.error("Error playing video:", error);
-                        const errorElement = video.querySelector('.error');
-                        if (errorElement) errorElement.style.display = 'block';
-
+                    playPromise.then(() => {
+                        console.log(`Video ${index + 1} started playing successfully`);
+                    }).catch(error => {
+                        console.error(`Error playing video ${index + 1}:`, error);
                         // If video fails, try to load GIF
                         const gifSource = video.querySelector('source[type="image/gif"]');
                         if (gifSource) {
+                            console.log(`Loading GIF for video ${index + 1}`);
                             const img = document.createElement('img');
                             img.src = gifSource.src;
                             img.style.width = '100%';
@@ -174,6 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Show story text after all videos
         setTimeout(() => {
+            console.log('Showing story text');
+            const storyText = document.querySelector('.story-text');
             if (storyText) {
                 storyText.style.opacity = '1';
             }
@@ -203,17 +214,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Add video event listeners
-    document.querySelectorAll('.grid-item video').forEach(video => {
+    document.querySelectorAll('.grid-item video').forEach((video, index) => {
+        console.log(`Setting up video ${index + 1} event listeners`);
         const loadingElement = video.parentElement.querySelector('.loading');
-        video.addEventListener('loadeddata', () => handleVideoLoad(video));
-        video.addEventListener('error', () => {
-            console.error('Error loading video:', video.src);
+
+        video.addEventListener('loadeddata', () => {
+            console.log(`Video ${index + 1} loaded data`);
+            handleVideoLoad(video);
+        });
+
+        video.addEventListener('error', (e) => {
+            console.error(`Error loading video ${index + 1}:`, e);
             if (loadingElement) {
                 loadingElement.textContent = 'Error loading video';
             }
             // If video fails to load, try to load GIF
             const gifSource = video.querySelector('source[type="image/gif"]');
             if (gifSource) {
+                console.log(`Loading GIF for video ${index + 1}`);
                 const img = document.createElement('img');
                 img.src = gifSource.src;
                 img.style.width = '100%';
