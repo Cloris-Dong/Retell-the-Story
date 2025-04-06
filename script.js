@@ -43,6 +43,15 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingElement.style.display = 'none';
         }
         video.style.opacity = '1';
+
+        // Force autoplay
+        video.play().catch(error => {
+            console.error('Error playing video:', error);
+            // If autoplay fails, try to play on user interaction
+            document.addEventListener('click', () => {
+                video.play().catch(e => console.error('Still cannot play video:', e));
+            }, { once: true });
+        });
     }
 
     // Hide the story text initially
