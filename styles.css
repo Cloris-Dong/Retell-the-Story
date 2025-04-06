@@ -125,29 +125,29 @@ video::-webkit-media-controls-toggle-closed-captions-button {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: #E5C7A3;
-    font-family: 'Times New Roman', Times, serif;
+    color: #ffffff;
+    font-family: "PingFang SC", sans-serif;
     text-align: center;
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.5s ease-in-out;
     cursor: pointer;
-    animation: breathe 2s infinite ease-in-out;
+    animation: pulse 2s infinite;
+    width: 50%;
+    white-space: nowrap;
+    font-size: clamp(16px, calc(2vw + 10px), 32px);
 }
 
-@keyframes breathe {
+@keyframes pulse {
     0% {
         opacity: 0.6;
-        transform: translate(-50%, -50%) scale(1);
     }
 
     50% {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1.05);
     }
 
     100% {
         opacity: 0.6;
-        transform: translate(-50%, -50%) scale(1);
     }
 }
 

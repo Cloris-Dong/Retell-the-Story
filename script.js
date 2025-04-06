@@ -98,20 +98,50 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Function to adjust font size based on grid width
+    // Function to adjust font size based on container width
     function adjustFontSize() {
-        const grid = document.querySelector('.grid');
-        const gridWidth = grid.offsetWidth;
-        const textWidth = gridWidth * 0.5; // Half of grid width
-        storyText.style.width = `${textWidth}px`;
+        const container = document.querySelector('.container');
+        const storyText = document.querySelector('.story-text');
+        if (!container || !storyText) return;
 
-        // Calculate font size based on text width
-        const textLength = storyText.textContent.length;
-        const fontSize = Math.min(textWidth / textLength * 1.5, 48); // Limit max font size
-        storyText.style.fontSize = `${fontSize}px`;
+        const containerWidth = container.offsetWidth;
+        const maxWidth = containerWidth * 0.5; // 50% of container width
+        const text = storyText.textContent;
+
+        // Create temporary span to measure text width
+        const span = document.createElement('span');
+        span.style.visibility = 'hidden';
+        span.style.position = 'absolute';
+        span.style.whiteSpace = 'nowrap';
+        span.style.fontFamily = '"PingFang SC", sans-serif';
+        document.body.appendChild(span);
+
+        // Binary search for optimal font size
+        let minSize = 12;
+        let maxSize = 48; // Maximum font size
+        let optimalSize = minSize;
+
+        while (minSize <= maxSize) {
+            const midSize = Math.floor((minSize + maxSize) / 2);
+            span.style.fontSize = midSize + 'px';
+            span.textContent = text;
+
+            if (span.offsetWidth <= maxWidth) {
+                optimalSize = midSize;
+                minSize = midSize + 1;
+            } else {
+                maxSize = midSize - 1;
+            }
+        }
+
+        // Remove temporary span
+        document.body.removeChild(span);
+
+        // Apply the calculated font size
+        storyText.style.fontSize = Math.min(optimalSize, 48) + 'px';
     }
 
-    // Adjust font size on load and resize
+    // Call adjustFontSize initially and on window resize
     adjustFontSize();
     window.addEventListener('resize', adjustFontSize);
 
@@ -201,8 +231,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (i === gridItems.length - 1) {
                 setTimeout(() => {
                     if (storyText) {
+                        console.log('Showing story text with pulse animation');
                         storyText.style.opacity = '0.6'; // Start from 0.6 opacity
-                        storyText.style.animation = 'breathe 2s infinite ease-in-out';
+                        storyText.style.animation = 'pulse 2s infinite';
                     }
                 }, storyTextDelay);
             }
