@@ -212,7 +212,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     video.currentTime = 0;
                     video.load();
                 });
-                location.reload();
+                // Add a small delay after sound ends before reloading
+                setTimeout(() => {
+                    location.reload();
+                }, 100);
             };
         } else {
             // If sound couldn't be played, reload after a short delay
