@@ -69,11 +69,11 @@ document.addEventListener('DOMContentLoaded', () => {
             letter-spacing: 1px;
             padding: 1rem 2.5rem;
             border: none;
-            box-shadow: inset 0 0 0 2px #fff;
+            box-shadow: inset 0 0 0 1px #fff;
             background-color: transparent;
             font-family: inherit;
             position: relative;
-            --border: 2px solid #131313;
+            --border: 1px solid #131313;
             border-radius: 30px;
         }
         
