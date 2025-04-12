@@ -1,4 +1,124 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Create spinner but don't add it immediately
+    const spinner = document.createElement('div');
+    spinner.classList.add('spinner');
+    spinner.style.position = 'fixed';
+    spinner.style.top = '20px';
+    spinner.style.left = '20px';
+    spinner.style.width = '33.28px';
+    spinner.style.height = '33.28px';
+    spinner.style.borderRadius = '50%';
+    spinner.style.display = 'inline-block';
+    spinner.style.boxSizing = 'border-box';
+    spinner.style.animation = 'animloader 2s linear infinite';
+    spinner.style.zIndex = '9999';
+    spinner.style.opacity = '0'; // Start invisible
+    spinner.style.transition = 'opacity 0.2s ease'; // Add smooth fade-in
+
+    // Delay adding the spinner for 0.3s
+    setTimeout(() => {
+        document.body.appendChild(spinner);
+        // After adding to DOM, make it visible with slight delay for transition
+        setTimeout(() => {
+            spinner.style.opacity = '1';
+        }, 10);
+    }, 300); // 0.3 seconds delay
+
+    // Set background color to dark gray
+    document.body.style.backgroundColor = '#131313';
+    document.body.style.color = 'white';
+    document.body.style.fontFamily = "'Courier New', monospace";
+
+    // Remove any noise effects if they exist
+    const existingBgNoise = document.querySelector('.bg-noise');
+    if (existingBgNoise) {
+        existingBgNoise.remove();
+    }
+
+    const existingFilmGrain = document.querySelector('.film-grain');
+    if (existingFilmGrain) {
+        existingFilmGrain.remove();
+    }
+
+    // Add new spinner animation to the document
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes animloader {
+            0% {
+                box-shadow: -72px 0 rgba(255, 255, 255, 0.9) inset;
+            }
+            100% {
+                box-shadow: 48px 0 rgba(255, 255, 255, 0.9) inset;
+            }
+        }
+        
+        .story-text {
+            font-size: 1.62em !important;
+            position: absolute !important;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            text-align: center;
+            margin-top: 10px !important;
+            display: block !important;
+            width: 100% !important;
+            left: 0 !important;
+            top: 100% !important;
+            transform: none !important;
+            font-weight: 300 !important;
+            letter-spacing: 1px;
+            padding: 12px 0;
+            border-radius: 4px;
+            font-family: inherit;
+        }
+        
+        .story-text::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            width: 0;
+            height: 1px;
+            background-color: white;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .story-text:hover {
+            color: white;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+        }
+        
+        .story-text:hover::after {
+            width: 80px;
+        }
+        
+        .story-text:active {
+            transform: scale(0.98) !important;
+            opacity: 0.5;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+        
+        /* Additional container styles to ensure proper positioning */
+        .container {
+            position: relative !important;
+            padding-bottom: 40px !important;
+        }
+        
+        /* Update copyright to white color */
+        .copyright {
+            color: white !important;
+            opacity: 0.7;
+        }
+    `;
+    document.head.appendChild(style);
+
     const gridItems = document.querySelectorAll('.grid-item');
     const storyText = document.querySelector('.story-text');
     const delay = 2800; // 2.8 seconds delay between each animation
@@ -216,6 +336,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (storyText) {
             storyText.style.opacity = '0';
             storyText.style.animation = 'none';
+
+            // Ensure story text is within container but below grid
+            const container = document.querySelector('.container');
+            const grid = document.querySelector('.grid');
+
+            // If story-text was moved to body, move it back to container
+            if (storyText.parentElement !== container && container) {
+                container.appendChild(storyText);
+            }
         }
 
         // Add initial delay before starting the first video
@@ -233,6 +362,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         console.log('Showing story text with pulse animation');
                         storyText.style.opacity = '0.6'; // Start from 0.6 opacity
                         storyText.style.animation = 'pulse 2s infinite';
+
+                        // Hide the spinner when story text appears
+                        const spinner = document.querySelector('.spinner');
+                        if (spinner) {
+                            spinner.style.opacity = '0';
+                            // Remove spinner from DOM after fade out
+                            setTimeout(() => {
+                                spinner.remove();
+                            }, 300);
+                        }
                     }
                 }, storyTextDelay);
             }
