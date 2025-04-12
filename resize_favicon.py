@@ -1,28 +1,51 @@
+import os
+
 from PIL import Image
 
 
-def resize_favicon():
-    # 打开图片
-    img = Image.open("favicon.png")
+def resize_favicon(input_path="favicon.png", output_path="favicon.png", size=(64, 64)):
+    try:
+        # Open the image
+        with Image.open(input_path) as img:
+            # Convert to RGBA if not already
+            if img.mode != "RGBA":
+                img = img.convert("RGBA")
 
-    # 获取原始尺寸
-    width, height = img.size
+            # Create a backup of the original file
+            if os.path.exists(input_path):
+                backup_path = input_path + ".backup"
+                if not os.path.exists(backup_path):
+                    os.rename(input_path, backup_path)
+                    print(f"Original file backed up as {backup_path}")
 
-    # 计算裁剪区域 - 缩小裁剪范围使图标更大
-    target_size = min(width, height) * 0.6  # 减小裁剪区域到原来的60%
-    left = (width - target_size) // 2
-    top = (height - target_size) // 2
-    right = left + target_size
-    bottom = top + target_size
+            # Calculate crop dimensions (remove 20% from each edge)
+            width, height = img.size
+            crop_left = int(width * 0.2)
+            crop_top = int(height * 0.2)
+            crop_right = width - crop_left
+            crop_bottom = height - crop_top
 
-    # 裁剪为正方形
-    img_cropped = img.crop((left, top, right, bottom))
+            # Crop the image
+            cropped_img = img.crop((crop_left, crop_top, crop_right, crop_bottom))
 
-    # 调整大小为64x64
-    img_resized = img_cropped.resize((64, 64), Image.Resampling.LANCZOS)
+            # Resize the image
+            resized_img = cropped_img.resize(size, Image.Resampling.LANCZOS)
 
-    # 保存调整后的图片
-    img_resized.save("favicon.png", "PNG")
+            # Save the resized image
+            resized_img.save(output_path, "PNG", optimize=True)
+            print(
+                f"Successfully cropped edges by 20% and resized to {size[0]}x{size[1]} pixels"
+            )
+            print(f"New file saved as: {output_path}")
+
+            # Print file sizes
+            original_size = os.path.getsize(backup_path) / 1024  # Convert to KB
+            new_size = os.path.getsize(output_path) / 1024  # Convert to KB
+            print(f"\nOriginal size: {original_size:.2f}KB")
+            print(f"New size: {new_size:.2f}KB")
+
+    except Exception as e:
+        print(f"Error: {str(e)}")
 
 
 if __name__ == "__main__":
