@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             color: rgba(255, 255, 255, 0.6);
             transition: all 0.3s ease;
             text-align: center;
-            margin-top: 11px !important;
+            margin-top: 1.5vh !important;
             display: block !important;
             width: 100% !important;
             left: 0 !important;
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         /* Additional container styles to ensure proper positioning */
         .container {
             position: relative !important;
-            padding-bottom: 40px !important;
+            padding-bottom: 5vh !important;
         }
         
         /* Update copyright to white color */
