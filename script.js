@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
             font-family: inherit;
             position: relative;
             --border: 2px solid #131313;
+            border-radius: 30px;
         }
         
         .story-text:before,
