@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
             color: rgba(255, 255, 255, 0.6);
             transition: all 0.3s ease;
             text-align: center;
-            margin-top: 10px !important;
+            margin-top: 11px !important;
             display: block !important;
             width: 100% !important;
             left: 0 !important;
