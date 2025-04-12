@@ -56,8 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
             font-size: 1.62em !important;
             position: absolute !important;
             cursor: pointer;
-            color: rgba(255, 255, 255, 0.6);
-            transition: all 0.3s ease;
+            color: #fff;
+            transition: color 0.1s linear;
             text-align: center;
             margin-top: 1.5vh !important;
             display: block !important;
@@ -65,42 +65,85 @@ document.addEventListener('DOMContentLoaded', () => {
             left: 50% !important;
             top: 100% !important;
             transform: translateX(-50%) !important;
-            font-weight: 300 !important;
+            font-weight: 600 !important;
             letter-spacing: 1px;
-            padding: 12px 32px;
-            border-radius: 2px;
-            font-family: inherit;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 1rem 2.5rem;
+            border: none;
+            box-shadow: inset 0 0 0 2px #fff;
             background-color: transparent;
+            font-family: inherit;
+            position: relative;
+            --border: 2px solid #131313;
         }
         
-        .story-text::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 50%;
-            width: 0;
+        .story-text:before,
+        .story-text:after {
+            content: "";
             height: 0;
-            background-color: transparent;
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
+            position: absolute;
+            width: 0;
+        }
+        
+        .story-text:before {
+            border-right: var(--border);
+            border-top: var(--border);
+            left: 0;
+            top: 0;
+        }
+        
+        .story-text:hover:before {
+            animation: border-top-and-right 1s forwards;
+        }
+        
+        .story-text:after {
+            border-bottom: var(--border);
+            border-left: var(--border);
+            bottom: 0;
+            right: 0;
+            z-index: -1;
+        }
+        
+        .story-text:hover:after {
+            animation: border-bottom-and-left 1s forwards;
+        }
+        
+        @keyframes border-top-and-right {
+            0% {
+                height: 0;
+                width: 0;
+            }
+            50% {
+                height: 0;
+                width: 100%;
+            }
+            100% {
+                height: 100%;
+                width: 100%;
+            }
+        }
+        
+        @keyframes border-bottom-and-left {
+            0% {
+                height: 0;
+                width: 0;
+            }
+            50% {
+                height: 0;
+                width: 100%;
+            }
+            100% {
+                height: 100%;
+                width: 100%;
+            }
         }
         
         .story-text:hover {
             color: white;
-            letter-spacing: 1.5px;
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
-            border-color: rgba(255, 255, 255, 0.8);
-        }
-        
-        .story-text:hover::after {
-            width: 0;
         }
         
         .story-text:active {
             transform: translateX(-50%) scale(0.98) !important;
-            opacity: 0.5;
-            background-color: rgba(255, 255, 255, 0.05);
+            opacity: 0.9;
         }
         
         @keyframes pulse {
