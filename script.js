@@ -61,15 +61,17 @@ document.addEventListener('DOMContentLoaded', () => {
             text-align: center;
             margin-top: 1.5vh !important;
             display: block !important;
-            width: 100% !important;
-            left: 0 !important;
+            width: auto !important;
+            left: 50% !important;
             top: 100% !important;
-            transform: none !important;
+            transform: translateX(-50%) !important;
             font-weight: 300 !important;
             letter-spacing: 1px;
-            padding: 12px 0;
-            border-radius: 4px;
+            padding: 12px 32px;
+            border-radius: 2px;
             font-family: inherit;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background-color: transparent;
         }
         
         .story-text::after {
@@ -78,8 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
             bottom: -2px;
             left: 50%;
             width: 0;
-            height: 1px;
-            background-color: white;
+            height: 0;
+            background-color: transparent;
             transition: all 0.3s ease;
             transform: translateX(-50%);
         }
@@ -88,15 +90,17 @@ document.addEventListener('DOMContentLoaded', () => {
             color: white;
             letter-spacing: 1.5px;
             text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.8);
         }
         
         .story-text:hover::after {
-            width: 80px;
+            width: 0;
         }
         
         .story-text:active {
-            transform: scale(0.98) !important;
+            transform: translateX(-50%) scale(0.98) !important;
             opacity: 0.5;
+            background-color: rgba(255, 255, 255, 0.05);
         }
         
         @keyframes pulse {
